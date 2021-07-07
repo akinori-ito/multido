@@ -10,13 +10,13 @@ username and password, and then executes the command.
 ## Usage
 
 ```
-Usage: multido [-sudo] hostfile command [ssh_options]
+Usage: multido [-- -sudo] hostfile command [ssh_options]
   hostfile: a file that contains the list of hostnames
             if hostfiles begins with =, the rest is regarded
             as a single hostname.
   command: command to be executed
   ssh_options: options to be used to the ssh command
-  -sudo:    execute the command as a superuser at the remote
+  -- -sudo:    execute the command as a superuser at the remote
             host using sudo command
 ```
 
@@ -33,3 +33,12 @@ then the command
    multido hosts ls
 ```
 executes "ls" command in the listed hosts. Upon execution, it asks the password.
+
+If you specify `-sudo` command, multido executes the command as a superuser.
+For example,
+
+```
+  multido -- -sudo hosts crontab -l
+```
+shows root's crontab at all of the listed hosts.
+(We need -- before the option; without it, -sudo is regarded as the option to expect command.)
