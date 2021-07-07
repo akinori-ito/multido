@@ -1,0 +1,85 @@
+#!/usr/bin/expect -f
+
+proc gethosts {hostfile} {
+  if {[regexp {^=} $hostfile]} {
+    return [regsub {^=} $hostfile {}]
+  }
+  set f [open $hostfile r]
+  set hosts {}
+  while 1 {
+    gets $f line
+    if {[eof $f]} break
+    set h [string trim $line]
+    if {[string length $h] > 0} {
+      lappend hosts $h
+    }
+  }
+  close $f
+  return $hosts
+}
+
+proc do_ssh {sudo host password command option} {
+  set prompt {P-R-O-M-P-T-#}
+  set state 0
+  eval spawn "ssh $option $host"
+  while {$state < 1} {
+    expect {
+      password: { send "$password\r" }
+      {(yes/no/[fingerprint])?} { send "yes\r" }
+      {$ } {
+        if {$state == 0} {
+          send "exec bash\n"
+          send "export PS1='$prompt'\r"
+          set state 1
+        }
+      }
+    }
+  }
+  expect $prompt {send "export LANG=C\r"}
+  if {$sudo} {
+    expect $prompt { send "sudo $command\r" }
+    expect -re "password" {send "$password\r"}
+  } else {
+    expect $prompt { send "$command\r" }
+  }
+  expect $prompt { send "exit\r" }
+  wait
+}
+
+set sudo 0
+if {$argc > 0 && [lindex $argv 0] eq "-sudo"} {
+  set sudo 1
+  set argv [lreplace $argv 0 0]
+  incr argc -1
+}
+
+if {$argc < 2} {
+  puts stderr {Usage: multido [-sudo] hostfile command [ssh_options]}
+  puts stderr {  hostfile: a file that contains the list of hostnames}
+  puts stderr {            if hostfiles begins with =, the rest is regarded}
+  puts stderr {            as a single hostname.}
+  puts stderr {  command: command to be executed}
+  puts stderr {  ssh_options: options to be used to the ssh command}
+  puts stderr {  -sudo:    execute the command as a superuser at the remote}
+  puts stderr {            host using sudo command}
+  exit
+}
+
+set hostfile [lindex $argv 0]
+set command [lindex $argv 1]
+if {$argv > 3} {
+  set option [lrange $argv 2 end]
+} else {
+  set option {}
+}
+
+puts -nonewline "Input password: "
+flush stdout
+set sttypar [stty -echo -raw]
+set password [gets stdin]
+eval stty $sttypar
+
+set hosts [gethosts $hostfile]
+foreach host $hosts {
+  do_ssh $sudo $host $password $command $option
+}
