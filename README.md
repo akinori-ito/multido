@@ -9,6 +9,7 @@ username and password, and then executes the command.
 
 ## Usage
 
+```
 Usage: multido [-sudo] hostfile command [ssh_options]
   hostfile: a file that contains the list of hostnames
             if hostfiles begins with =, the rest is regarded
@@ -17,6 +18,7 @@ Usage: multido [-sudo] hostfile command [ssh_options]
   ssh_options: options to be used to the ssh command
   -sudo:    execute the command as a superuser at the remote
             host using sudo command
+```
 
 ## Example
 
