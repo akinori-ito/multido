@@ -46,6 +46,7 @@ proc do_ssh {sudo host password command option} {
   wait
 }
 
+
 set sudo 0
 if {$argc > 0 && [lindex $argv 0] eq "-sudo"} {
   set sudo 1
@@ -67,7 +68,7 @@ if {$argc < 2} {
 
 set hostfile [lindex $argv 0]
 set command [lindex $argv 1]
-if {$argv > 3} {
+if {$argc > 2} {
   set option [lrange $argv 2 end]
 } else {
   set option {}

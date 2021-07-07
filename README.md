@@ -38,7 +38,7 @@ If you specify `-sudo` command, multido executes the command as a superuser.
 For example,
 
 ```
-  multido -- -sudo hosts crontab -l
+  multido -- -sudo hosts "crontab -l"
 ```
 shows root's crontab at all of the listed hosts.
 (We need -- before the option; without it, -sudo is regarded as the option to expect command.)
