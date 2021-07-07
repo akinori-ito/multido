@@ -30,4 +30,4 @@ then the command
 ```
    multido hosts ls
 ```
-executes "ls" command in the listed hosts. 
+executes "ls" command in the listed hosts. Upon execution, it asks the password.
