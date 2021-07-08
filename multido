@@ -26,6 +26,7 @@ proc do_ssh {sudo host password command option} {
     expect {
       password: { send "$password\r" }
       {(yes/no/[fingerprint])?} { send "yes\r" }
+      {(yes/no)?} { send "yes\r" }
       {$ } {
         if {$state == 0} {
           send "exec bash\n"
