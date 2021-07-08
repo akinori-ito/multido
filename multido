@@ -21,20 +21,28 @@ proc gethosts {hostfile} {
 proc do_ssh {sudo host password command option} {
   set prompt {P-R-O-M-P-T-#}
   set state 0
-  eval spawn "ssh $option $host"
-  while {$state < 1} {
-    expect {
-      password: { send "$password\r" }
-      {(yes/no/[fingerprint])?} { send "yes\r" }
-      {(yes/no)?} { send "yes\r" }
-      {$ } {
-        if {$state == 0} {
-          send "exec bash\n"
-          send "export PS1='$prompt'\r"
-          set state 1
+  if {[catch {eval spawn "ssh $option $host"} errmsg]} {
+    puts $errmsg
+    return
+  }
+  if {[catch {
+    while {$state < 1} {
+      expect {
+        password: { send "$password\r" }
+        {(yes/no/[fingerprint])?} { send "yes\r" }
+        {(yes/no)?} { send "yes\r" }
+        {$ } {
+          if {$state == 0} {
+            send "exec bash\n"
+            send "export PS1='$prompt'\r"
+            set state 1
+          }
         }
       }
     }
+  } errmsg]} {
+   puts $errmsg
+   return
   }
   expect $prompt {send "export LANG=C\r"}
   if {$sudo} {
