@@ -64,14 +64,14 @@ if {$argc > 0 && [lindex $argv 0] eq "-sudo"} {
 }
 
 if {$argc < 2} {
-  puts stderr {Usage: multido [-sudo] hostfile command [ssh_options]}
+  puts stderr {Usage: multido [-- -sudo] hostfile command [ssh_options]}
   puts stderr {  hostfile: a file that contains the list of hostnames}
   puts stderr {            if hostfiles begins with =, the rest is regarded}
   puts stderr {            as a single hostname.}
   puts stderr {  command: command to be executed}
   puts stderr {  ssh_options: options to be used to the ssh command}
-  puts stderr {  -sudo:    execute the command as a superuser at the remote}
-  puts stderr {            host using sudo command}
+  puts stderr {  -- -sudo:    execute the command as a superuser at the remote}
+  puts stderr {               host using sudo command}
   exit
 }
 
